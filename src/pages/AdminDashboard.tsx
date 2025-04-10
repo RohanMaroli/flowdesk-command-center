@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { mockTeams, getComplaintsByTeam } from '@/lib/mockData';
 import TeamCard from '@/components/TeamCard';
@@ -23,13 +22,8 @@ const AdminDashboard = () => {
   const percentWhatsapp = totalComplaints ? Math.round((whatsappComplaints / totalComplaints) * 100) : 0;
   const percentEmail = totalComplaints ? Math.round((emailComplaints / totalComplaints) * 100) : 0;
 
-  // Redirect if not the main admin - should be handled by router, this is a backup
-  if (user?.role !== 'main-admin') {
-    return null;
-  }
-
   return (
-    <Layout requireAuth>
+    <Layout requireAuth requiredRoles={['main-admin']}>
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>

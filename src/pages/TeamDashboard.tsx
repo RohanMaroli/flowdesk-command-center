@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -39,6 +38,7 @@ const TeamDashboard = () => {
   const navigate = useNavigate();
   const [team, setTeam] = useState<TeamInfo | null>(null);
   const [complaints, setComplaints] = useState<any[]>([]);
+  const [allowedRoles, setAllowedRoles] = useState<string[]>(['main-admin']);
   
   useEffect(() => {
     if (!teamId) return;
@@ -56,25 +56,15 @@ const TeamDashboard = () => {
     const teamComplaints = getComplaintsByTeam(teamRole);
     setComplaints(teamComplaints);
     
+    // Set allowed roles: main-admin or the specific team role
+    if (teamRole) {
+      setAllowedRoles(['main-admin', teamRole]);
+    }
+    
   }, [teamId, navigate]);
-  
-  // Check if user has access to this team
-  const hasAccess = user?.role === 'main-admin' || 
-                   (teamId && user?.role === teamRoleMap[teamId]);
-  
-  if (!hasAccess || !team) {
-    navigate('/dashboard');
-    return null;
-  }
-  
-  // Calculate stats
-  const totalComplaints = complaints.length;
-  const newComplaints = complaints.filter(c => c.status === 'new').length;
-  const inProgressComplaints = complaints.filter(c => c.status === 'in-progress').length;
-  const resolvedComplaints = complaints.filter(c => c.status === 'resolved').length;
 
   return (
-    <Layout requireAuth>
+    <Layout requireAuth requiredRoles={allowedRoles}>
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center mb-8">
           <Button 
@@ -101,7 +91,7 @@ const TeamDashboard = () => {
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>Total Complaints</CardDescription>
-              <CardTitle className="text-3xl">{totalComplaints}</CardTitle>
+              <CardTitle className="text-3xl">{complaints.length}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center text-sm text-muted-foreground">
@@ -114,7 +104,7 @@ const TeamDashboard = () => {
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>New</CardDescription>
-              <CardTitle className="text-3xl">{newComplaints}</CardTitle>
+              <CardTitle className="text-3xl">{complaints.filter(c => c.status === 'new').length}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center text-sm text-muted-foreground">
@@ -127,7 +117,7 @@ const TeamDashboard = () => {
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>In Progress</CardDescription>
-              <CardTitle className="text-3xl">{inProgressComplaints}</CardTitle>
+              <CardTitle className="text-3xl">{complaints.filter(c => c.status === 'in-progress').length}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center text-sm text-muted-foreground">
@@ -140,7 +130,7 @@ const TeamDashboard = () => {
           <Card>
             <CardHeader className="pb-2">
               <CardDescription>Resolved</CardDescription>
-              <CardTitle className="text-3xl">{resolvedComplaints}</CardTitle>
+              <CardTitle className="text-3xl">{complaints.filter(c => c.status === 'resolved').length}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center text-sm text-muted-foreground">

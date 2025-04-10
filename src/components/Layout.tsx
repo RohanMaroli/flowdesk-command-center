@@ -8,9 +8,14 @@ import Footer from './Footer';
 type LayoutProps = {
   children: React.ReactNode;
   requireAuth?: boolean;
+  requiredRoles?: string[];
 };
 
-const Layout: React.FC<LayoutProps> = ({ children, requireAuth = false }) => {
+const Layout: React.FC<LayoutProps> = ({ 
+  children, 
+  requireAuth = false,
+  requiredRoles = []
+}) => {
   const { user, isLoading } = useAuth();
   const location = useLocation();
 
@@ -29,6 +34,17 @@ const Layout: React.FC<LayoutProps> = ({ children, requireAuth = false }) => {
   // Redirect unauthenticated users
   if (requireAuth && !user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  // Check for role-based access restrictions
+  if (
+    requireAuth && 
+    user && 
+    requiredRoles.length > 0 && 
+    !requiredRoles.includes(user.role)
+  ) {
+    // Redirect to dashboard or another appropriate page if user doesn't have required role
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   return (
