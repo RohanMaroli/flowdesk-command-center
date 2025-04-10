@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
@@ -39,9 +40,13 @@ const TeamDashboard = () => {
   const [team, setTeam] = useState<TeamInfo | null>(null);
   const [complaints, setComplaints] = useState<any[]>([]);
   const [allowedRoles, setAllowedRoles] = useState<string[]>(['main-admin']);
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    if (!teamId) return;
+    if (!teamId) {
+      setIsLoading(false);
+      return;
+    }
     
     // Get team info
     const teamInfo = getTeamById(teamId);
@@ -61,7 +66,44 @@ const TeamDashboard = () => {
       setAllowedRoles(['main-admin', teamRole]);
     }
     
+    setIsLoading(false);
   }, [teamId, navigate]);
+
+  // Show loading state while team data is being fetched
+  if (isLoading) {
+    return (
+      <Layout requireAuth requiredRoles={allowedRoles}>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-pulse flex flex-col items-center">
+              <div className="h-12 w-12 rounded-full bg-flowdesk-300 mb-4"></div>
+              <div className="h-4 w-24 bg-flowdesk-200 rounded"></div>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Handle case where team is not found
+  if (!team) {
+    return (
+      <Layout requireAuth requiredRoles={allowedRoles}>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col items-center justify-center h-64">
+            <h2 className="text-2xl font-bold mb-4">Team not found</h2>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/dashboard')}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout requireAuth requiredRoles={allowedRoles}>
