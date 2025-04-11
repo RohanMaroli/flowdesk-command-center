@@ -8,29 +8,39 @@ import Layout from '@/components/Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { 
-  MessageSquare, 
-  Mail, 
-  Users, 
+  HelpCircle,
+  Heart,
+  CreditCard,
+  Settings,
   AlertCircle, 
   ArrowLeft,
   Clock,
   CheckCircle,
+  Users,
 } from 'lucide-react';
 
 // Map from URL param to user role
 const teamRoleMap: Record<string, UserRole> = {
-  'team-customer-care': 'customer-care',
+  'team-general-queries': 'general-queries',
+  'team-psychological': 'psychological',
+  'team-accounts': 'accounts',
   'team-technical': 'technical',
-  'team-billing': 'billing',
-  'team-logistics': 'logistics',
 };
 
 // Map from team ID to color
 const teamColorMap: Record<string, string> = {
-  'team-customer-care': 'bg-teal-500',
-  'team-technical': 'bg-orange-500',
-  'team-billing': 'bg-purple-500',
-  'team-logistics': 'bg-green-500',
+  'team-general-queries': 'bg-teal-500',
+  'team-psychological': 'bg-orange-500',
+  'team-accounts': 'bg-purple-500',
+  'team-technical': 'bg-green-500',
+};
+
+// Map from team ID to icon component
+const teamIconMap: Record<string, any> = {
+  'team-general-queries': HelpCircle,
+  'team-psychological': Heart,
+  'team-accounts': CreditCard,
+  'team-technical': Settings,
 };
 
 const TeamDashboard = () => {
@@ -105,6 +115,8 @@ const TeamDashboard = () => {
     );
   }
 
+  const TeamIcon = teamIconMap[teamId || ''] || Users;
+
   return (
     <Layout requireAuth requiredRoles={allowedRoles}>
       <div className="container mx-auto px-4 py-8">
@@ -121,7 +133,7 @@ const TeamDashboard = () => {
           <div>
             <div className="flex items-center">
               <div className={`w-10 h-10 rounded-md ${teamColorMap[teamId || '']} flex items-center justify-center mr-3`}>
-                <Users className="h-5 w-5 text-white" />
+                <TeamIcon className="h-5 w-5 text-white" />
               </div>
               <h1 className="text-3xl font-bold">{team.name} Dashboard</h1>
             </div>

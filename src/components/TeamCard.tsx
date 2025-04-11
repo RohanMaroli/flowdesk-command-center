@@ -1,14 +1,14 @@
 
 import { Link } from 'react-router-dom';
 import { TeamInfo } from '@/lib/mockData';
-import { ArrowRight, Users, Wrench, CreditCard, Truck } from 'lucide-react';
+import { ArrowRight, HelpCircle, Heart, CreditCard, Settings } from 'lucide-react';
 
 // Map team IDs to icons
 const teamIcons: Record<string, any> = {
-  'team-customer-care': Users,
-  'team-technical': Wrench,
-  'team-billing': CreditCard,
-  'team-logistics': Truck,
+  'team-general-queries': HelpCircle,
+  'team-psychological': Heart,
+  'team-accounts': CreditCard,
+  'team-technical': Settings,
 };
 
 interface TeamCardProps {
@@ -16,7 +16,7 @@ interface TeamCardProps {
 }
 
 const TeamCard: React.FC<TeamCardProps> = ({ team }) => {
-  const IconComponent = teamIcons[team.id] || Users;
+  const IconComponent = teamIcons[team.id] || HelpCircle;
 
   return (
     <Link 
